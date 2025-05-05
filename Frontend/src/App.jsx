@@ -1,43 +1,63 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Header from './components/layout/Header'
-import Home from './pages/routepublic/home/Home'
-import VagasPublicas from './pages/routepublic/vagapub/VagasPublicas'
-import CadastroVoluntario from './pages/routepublic/CadastroVolunter'
-import LoginPage from './pages/routepublic/LoginPage'
-import RegisterPage from './pages/routepublic/RegisterPage'
-import Leaderboard from './pages/routepublic/LeaderBoard'
-import DashboardHospital from './pages/routeadmin/hospage/DashboardHosp'
-import CriarVaga from './pages/routeadmin/criarvaga/CriarVaga'
-import GerenciarUsuarios from './pages/routeadmin/GerenciarUsu'
-import NotFound from './pages/NotFound'
+import Header from "./components/layout/Header";
+import Home from "./pages/routepublic/home/Home";
+import VagasPublicas from "./pages/routepublic/vagapub/VagasPublicas";
+import CadastroVoluntario from "./pages/routepublic/voluntario/CadastroVolunter";
+import LoginPage from "./pages/routepublic/voluntario/LoginPage";
+import RegisterPage from "./pages/routepublic/voluntario/RegisterPage";
+import Leaderboard from "./pages/routepublic/voluntario/LeaderBoard";
 
-import PrivateRoute from './components/private/PrivateRoute'
+import DashboardHospital from "./pages/routeadmin/hospage/DashboardHosp";
+import CriarVaga from "./pages/routeadmin/criarvaga/CriarVaga";
+import GerenciarUsuarios from "./pages/routeadmin/gerenciarusu/GerenciarUsu";
 
-const App = () => {
-  return (
-    <Router>
-      <Header />
-      <Routes>
-        {/* Rotas públicas */}
-        <Route path="/" element={<Home />} />
-        <Route path="/vagas" element={<VagasPublicas />} />
-        <Route path="/cadastroV" element={<CadastroVoluntario />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
+import NotFound from "./pages/NotFound";
+import PrivateRoute from "./components/private/PrivateRoute";
 
-        {/* Rotas protegidas */}
-        <Route path="/admin/dashboard" element={<PrivateRoute><DashboardHospital /></PrivateRoute>} />
-        <Route path="/admin/criar-vaga" element={<PrivateRoute><CriarVaga /></PrivateRoute>} />
-        <Route path="/admin/usuarios" element={<PrivateRoute><GerenciarUsuarios /></PrivateRoute>} />
-        
-        {/* Catch-all */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
-  )
-}
+const App = () => (
+  <Router>
+    <Header />
+    <Routes>
+      {/* Rotas públicas */}
+      <Route path="/" element={<Home />} />
+      <Route path="/vagas" element={<VagasPublicas />} />
+      <Route path="/cadastroV" element={<CadastroVoluntario />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
 
-export default App
+      {/* Rotas de admin (precisam de token + role="admin") */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <DashboardHospital />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/criar-vaga"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <CriarVaga />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/usuarios"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <GerenciarUsuarios />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Catch-all */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Router>
+);
+
+export default App;

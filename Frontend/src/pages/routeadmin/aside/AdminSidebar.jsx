@@ -10,7 +10,7 @@ const AdminSidebar = () => {
       <h2 className="admin-sidebar__title">Admin Panel</h2>
       <ul className="admin-sidebar__nav">
         <li onClick={() => navigate('/admin/dashboard')}>Página principal</li>
-        <li onClick={() => navigate('/admin/usuarios')}>Gerenciar usuários</li>
+        <li onClick={() => navigate('/admin/usuarios')}>Gerenciar Usuários Cadastrados</li>
         <li onClick={() => navigate('/admin/criar-vaga')}>Criar nova vaga</li>
         <li onClick={() => navigate('/vagas')}>Ver vagas públicas</li> 
         <li onClick={() => navigate('/admin/candidatos')}>Candidatos</li> 
