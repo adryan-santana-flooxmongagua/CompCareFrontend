@@ -1,24 +1,31 @@
+// src/components/layout/Header.jsx
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { auth } from '../../services/firebaseConfig';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import './Header.css'; 
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import './Header.css';
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // Roda sempre que a rota mudar
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user);
-    });
+    const token = localStorage.getItem('token');
+    const storedRole = localStorage.getItem('role');
+    setIsAuthenticated(!!token);
+    setRole(storedRole);
+  }, [location]);
 
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    await signOut(auth);
+  const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login'; // força redirecionar
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    localStorage.removeItem('userId');
+    setIsAuthenticated(false);
+    setRole(null);
+    navigate('/login');
   };
 
   return (
@@ -29,13 +36,44 @@ const Header = () => {
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/vagas" className="nav-link">Vagas</Link>
           <Link to="/leaderboard" className="nav-link">Ranking</Link>
+
           {!isAuthenticated ? (
             <>
               <Link to="/login" className="nav-link">Login</Link>
               <Link to="/register" className="nav-link">Registrar</Link>
             </>
           ) : (
-            <button onClick={handleLogout} className="nav-link">Sair</button>
+            <div className="menu-wrapper">
+              <button
+                className="menu-button"
+                onClick={() => setMenuOpen(o => !o)}
+              >
+                ☰
+              </button>
+              {menuOpen && (
+                <div className="dropdown-menu">
+                  {role === 'admin' && (
+                    <>
+                      <Link to="/admin/dashboard" className="dropdown-link">Dashboard</Link>
+                      <Link to="/admin/criar-vaga" className="dropdown-link">Criar Vaga</Link>
+                      <Link to="/admin/usuarios" className="dropdown-link">Usuários</Link>
+                    </>
+                  )}
+                  {role === 'volunteer' && (
+                    <>
+                      <Link to="/meus-pontos" className="dropdown-link">Meus Pontos</Link>
+                      <Link to="/minhas-vagas" className="dropdown-link">Minhas Vagas</Link>
+                    </>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="dropdown-link logout"
+                  >
+                    Sair
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </nav>
       </div>

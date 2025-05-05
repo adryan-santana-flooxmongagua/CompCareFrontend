@@ -1,9 +1,11 @@
-/* styles/global.css */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #a2b7e8;
-    margin: 0;
-    padding: 0;
-    color: #212121;
-  }
-  
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}

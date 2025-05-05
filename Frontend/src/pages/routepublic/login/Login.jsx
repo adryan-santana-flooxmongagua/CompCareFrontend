@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { auth } from '../../../services/firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import './style.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro('');
 
     if (!email || !senha) {
       setErro('Por favor, preencha todos os campos!');
@@ -19,19 +19,45 @@ const Login = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      console.log('Login bem-sucedido!');
-      setErro('');
-      navigate('/admin/dashboard'); 
-    } catch (error) {
-      console.error('Erro ao fazer login:', error.message);
-      setErro('Email ou senha inválidos!');
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: senha })
+      });
+
+      const data = await response.json();
+      console.log('Response Data:', data); // Logar a resposta para ver a estrutura retornada
+
+      if (!response.ok) {
+        setErro(data.error || 'Email ou senha inválidos!');
+      } else {
+        const { token, user } = data;
+        console.log('Token:', token); // Verificar se o token está correto
+        console.log('User:', user); // Verificar se o objeto user está correto
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', user.role);
+        localStorage.setItem('name', user.name);
+        localStorage.setItem('userId', user.id);
+
+        if (user.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/');
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao fazer login:', err);
+      setErro('Erro de conexão. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      <h2 className="login-title">Por favor digite suas informações de login</h2>
+      <h2 className="login-title">Por favor, digite suas informações de login</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="login-input-group">
           <label className="login-label">E-mail</label>
@@ -58,13 +84,15 @@ const Login = () => {
         {erro && <p className="login-error">{erro}</p>}
 
         <div className="login-link-container">
-          <a href="#" className="login-link">Esqueceu sua senha ?</a>
+          <Link to="/forgot-password" className="login-link">Esqueceu sua senha?</Link>
         </div>
 
-        <button type="submit" className="login-button">Entrar</button>
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
 
         <p className="login-footer">
-          Você não tem uma conta? <a href="/register" className="login-link">Crie a sua conta aqui</a>
+          Você não tem uma conta? <Link to="/register" className="login-link">Crie a sua conta aqui</Link>
         </p>
       </form>
     </div>

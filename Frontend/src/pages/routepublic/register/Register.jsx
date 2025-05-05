@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { auth, db } from '../../../services/firebaseConfig'; // importar o db também!
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore'; // importar Firestore
 import { useNavigate, Link } from 'react-router-dom';
 import './style.css';
 
@@ -10,12 +7,14 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [role, setRole] = useState('volunteer'); // Estado para armazenar o tipo de papel
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro('');
 
     if (!nome || !email || !senha || !confirmarSenha) {
       setErro('Por favor, preencha todos os campos!');
@@ -27,41 +26,26 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-      const user = userCredential.user;
-
-      // Atualizar nome de exibição
-      await updateProfile(user, {
-        displayName: nome
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nome, email, password: senha, role })
       });
 
-      // Criar um documento no Firestore
-      await setDoc(doc(db, "usuarios", user.uid), {
-        uid: user.uid,
-        nome: nome,
-        email: email,
-        criadoEm: new Date()
-      });
-
-      console.log('Cadastro e criação no Firestore bem-sucedidos!');
-      setErro('');
-      navigate('/login');
-    } catch (error) {
-      console.error('Erro ao cadastrar:', error.message);
-
-      if (error.code === 'auth/email-already-in-use') {
-        setErro('Este email já está em uso.');
-      } else if (error.code === 'auth/weak-password') {
-        setErro('A senha deve ter pelo menos 6 caracteres.');
-      } else if (error.code === 'auth/invalid-email') {
-        setErro('Formato de email inválido.');
+      const data = await response.json();
+      if (!response.ok) {
+        setErro(data.error || 'Erro ao criar conta.');
       } else {
-        setErro('Erro ao criar conta.');
+        navigate('/login');
       }
+    } catch (err) {
+      console.error('Erro ao cadastrar:', err);
+      setErro('Erro de conexão. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -110,6 +94,19 @@ const Register = () => {
             onChange={(e) => setConfirmarSenha(e.target.value)}
             className="login-input"
           />
+        </div>
+
+        {/* Opção de seleção de papel (role) */}
+        <div className="login-input-group">
+          <label className="login-label">Tipo de Usuário</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="login-input"
+          >
+            <option value="volunteer">Voluntário</option>
+            <option value="admin">Administrador</option>
+          </select>
         </div>
 
         {erro && <p className="login-error">{erro}</p>}

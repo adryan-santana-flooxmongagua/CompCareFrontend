@@ -39,3 +39,34 @@
     color: #4f46e5;
   }
   
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    position: absolute;
+    right: 0;
+    background-color: white;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    display: block;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .logout {
+    color: red;
+  }
+  

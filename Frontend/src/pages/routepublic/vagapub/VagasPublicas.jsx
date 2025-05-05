@@ -1,44 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../../services/firebaseConfig';
 import './Vagapub.css';
 
 const VagasPublicas = () => {
   const [vagas, setVagas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVagas = async () => {
       try {
-        const vagasCollection = collection(db, 'vagas');
-        const vagasSnapshot = await getDocs(vagasCollection);
-        const vagasList = vagasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setVagas(vagasList);
+        const response = await fetch("http://localhost:5000/api/vagas/vagas");
+        const data = await response.json();
+        const vagasAtivas = data.filter(vaga => vaga.status === "ativa");
+        setVagas(vagasAtivas);
       } catch (error) {
-        console.error('Erro ao buscar vagas:', error);
+        console.error("Erro ao buscar vagas:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchVagas();
   }, []);
 
-  const handleCandidatar = (vagaId) => {
+  const handleCandidatar = async (vagaId) => {
     alert(`Você se candidatou à vaga com ID: ${vagaId}`);
-    //adicionar lógica para enviar a candidatura ao Firestore, etc.
+
+    // Exemplo futuro para POST:
+    /*
+    try {
+      const response = await fetch("http://localhost:5000/api/candidaturas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vagaId, userId: "id_do_usuario_aqui" }),
+      });
+
+      const result = await response.json();
+      alert("Candidatura enviada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao se candidatar:", error);
+      alert("Erro ao se candidatar.");
+    }
+    */
   };
 
   return (
     <div className="vagas-container">
       <h2 className="vagas-title">Vagas Disponíveis</h2>
 
-      {vagas.length === 0 ? (
+      {loading ? (
+        <p className="vagas-loading">Carregando vagas...</p>
+      ) : vagas.length === 0 ? (
         <p className="vagas-empty">Não há vagas disponíveis no momento.</p>
       ) : (
         <div className="vagas-list">
           {vagas.map(vaga => (
-            <div key={vaga.id} className="vaga-card">
+            <div key={vaga._id} className="vaga-card">
               {vaga.imageUrl && (
                 <img
-                  src={vaga.imageUrl}
+                  src={`http://localhost:5000${vaga.imageUrl}`}
                   alt={vaga.titulodavaga}
                   className="vaga-image"
                 />
@@ -52,7 +71,7 @@ const VagasPublicas = () => {
                 <p className="vaga-quantity">Vagas: {vaga.qtd_vagas}</p>
                 <button
                   className="vaga-btn"
-                  onClick={() => handleCandidatar(vaga.id)}
+                  onClick={() => handleCandidatar(vaga._id)}
                 >
                   Quero me candidatar
                 </button>

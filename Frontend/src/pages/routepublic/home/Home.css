@@ -6,6 +6,8 @@
   padding: 60px 20px;
   background-color: #a2b7e8; 
   text-align: center;
+  width: auto;
+  height: 100%;
 }
 
 @media (min-width: 768px) {
