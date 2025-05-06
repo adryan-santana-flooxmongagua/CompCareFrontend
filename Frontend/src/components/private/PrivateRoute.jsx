@@ -14,6 +14,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
   if (requiredRole && role !== requiredRole) {
     return <Navigate to="/" replace />;
   }
+  
 
   // Autorizado
   return children;

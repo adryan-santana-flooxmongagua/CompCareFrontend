@@ -62,7 +62,7 @@ const Header = () => {
                   {role === 'volunteer' && (
                     <>
                       <Link to="/meus-pontos" className="dropdown-link">Meus Pontos</Link>
-                      <Link to="/minhas-vagas" className="dropdown-link">Minhas Vagas</Link>
+                      <Link to="/voluntario/minhas-candidaturas" className="dropdown-link">Minhas Vagas</Link>
                     </>
                   )}
                   <button

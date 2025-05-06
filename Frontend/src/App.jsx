@@ -5,13 +5,16 @@ import Header from "./components/layout/Header";
 import Home from "./pages/routepublic/home/Home";
 import VagasPublicas from "./pages/routepublic/vagapub/VagasPublicas";
 import CadastroVoluntario from "./pages/routepublic/voluntario/CadastroVolunter";
-import LoginPage from "./pages/routepublic/voluntario/LoginPage";
-import RegisterPage from "./pages/routepublic/voluntario/RegisterPage";
+import LoginPage from "./pages/routepublic/LoginPage";
+import RegisterPage from "./pages/routepublic/RegisterPage";
 import Leaderboard from "./pages/routepublic/voluntario/LeaderBoard";
 
 import DashboardHospital from "./pages/routeadmin/hospage/DashboardHosp";
 import CriarVaga from "./pages/routeadmin/criarvaga/CriarVaga";
 import GerenciarUsuarios from "./pages/routeadmin/gerenciarusu/GerenciarUsu";
+import AprovarVoluntarios from "./pages/routeadmin/aprov/AprovarVoluntarios";
+
+import VagasCandidatas from "./pages/routepublic/voluntario/VagasCandidatadas";
 
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/private/PrivateRoute";
@@ -27,7 +30,6 @@ const App = () => (
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/leaderboard" element={<Leaderboard />} />
-
       {/* Rotas de admin (precisam de token + role="admin") */}
       <Route
         path="/admin/dashboard"
@@ -53,7 +55,23 @@ const App = () => (
           </PrivateRoute>
         }
       />
-
+      <Route
+        path="/admin/aprovar-voluntarios"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <AprovarVoluntarios />
+          </PrivateRoute>
+        }
+      />
+      {/* Rotas de voluntário (precisam de token + role="volunteer")*/}
+      <Route
+        path="/voluntario/minhas-candidaturas"
+        element={
+          <PrivateRoute requiredRole="volunteer">
+            <VagasCandidatas />
+          </PrivateRoute>
+        }
+      />
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
     </Routes>

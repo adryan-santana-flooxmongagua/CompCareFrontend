@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL, API_BASE_IMAGE_URL } from "../../../config/api";
 import './Vagapub.css';
 
 const VagasPublicas = () => {
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null); // Estado para armazenar o papel do usuário
 
   useEffect(() => {
     const fetchVagas = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/vagas/vagas");
+        const response = await fetch(`${API_BASE_URL}/vagas/vagas`);
         const data = await response.json();
+        console.log("Vagas recebidas:", data);
         const vagasAtivas = data.filter(vaga => vaga.status === "ativa");
         setVagas(vagasAtivas);
       } catch (error) {
@@ -19,28 +22,57 @@ const VagasPublicas = () => {
       }
     };
 
+    // Função para decodificar o token JWT e obter o papel do usuário
+    const fetchUserRole = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodifica o payload do JWT
+          setUserRole(decodedToken.role); // Supondo que o campo "role" esteja presente no token
+        } catch (error) {
+          console.error("Erro ao decodificar o token:", error);
+        }
+      }
+    };
+
     fetchVagas();
+    fetchUserRole(); // Chama a função para obter o papel do usuário
   }, []);
 
   const handleCandidatar = async (vagaId) => {
-    alert(`Você se candidatou à vaga com ID: ${vagaId}`);
+    if (userRole !== 'volunteer') {
+      alert('Você precisa ser um voluntário para se candidatar a vagas.');
+      return;
+    }
 
-    // Exemplo futuro para POST:
-    /*
     try {
-      const response = await fetch("http://localhost:5000/api/candidaturas", {
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        alert('Você precisa estar logado para se candidatar.');
+        return;
+      }
+  
+      const response = await fetch(`${API_BASE_URL}/candidaturas`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vagaId, userId: "id_do_usuario_aqui" }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ vagaId }),
       });
-
+  
       const result = await response.json();
-      alert("Candidatura enviada com sucesso!");
+  
+      if (response.ok) {
+        alert(result.message); // Sucesso
+      } else {
+        alert(result.message); // Já se candidatou ou outro erro tratado
+      }
     } catch (error) {
       console.error("Erro ao se candidatar:", error);
       alert("Erro ao se candidatar.");
     }
-    */
   };
 
   return (
@@ -57,7 +89,7 @@ const VagasPublicas = () => {
             <div key={vaga._id} className="vaga-card">
               {vaga.imageUrl && (
                 <img
-                  src={`http://localhost:5000${vaga.imageUrl}`}
+                  src={`${API_BASE_IMAGE_URL}${vaga.imageUrl}`}
                   alt={vaga.titulodavaga}
                   className="vaga-image"
                 />

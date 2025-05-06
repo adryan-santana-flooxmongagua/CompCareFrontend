@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AdminSidebar from '../aside/AdminSidebar';
+import { API_BASE_URL } from "../../../config/api";
 import './CriarVaga.css';
 
 const CriarVaga = () => {
@@ -42,7 +43,7 @@ const CriarVaga = () => {
     }
   
     try {
-      const response = await fetch("http://localhost:5000/api/vagas/vagas", {
+      const response = await fetch(`${API_BASE_URL}/vagas/vagas`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,        

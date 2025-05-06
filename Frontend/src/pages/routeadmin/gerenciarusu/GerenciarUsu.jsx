@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "../aside/AdminSidebar";
+import { API_BASE_URL } from "../../../config/api";
 import "./GerenciarUsuarios.css";
 
 const GerenciarUsuarios = () => {
@@ -11,7 +12,7 @@ const GerenciarUsuarios = () => {
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/users", {
+        const response = await fetch(`${API_BASE_URL}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +39,7 @@ const GerenciarUsuarios = () => {
     if (!window.confirm("Deseja realmente excluir este usuário?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
