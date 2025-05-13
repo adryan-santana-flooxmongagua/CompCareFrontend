@@ -1,0 +1,33 @@
+.candidatos-container {
+    padding: 20px;
+    color: #000000;
+  }
+  
+  .candidatos-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1e1e2f;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .candidatos-table th,
+  .candidatos-table td {
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a40;
+  }
+  
+  .candidatos-table th {
+    background-color: #2a2a40;
+    color: #ccc;
+  }
+  
+  .candidatos-table tr:hover {
+    background-color: #33334d;
+  }
+  
+  .error {
+    color: red;
+  }
+  

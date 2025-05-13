@@ -1,0 +1,113 @@
+/* Container Principal */
+.vagas-container {
+  background-color: #e3eafc;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+
+/* Título */
+.vagas-title {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+  color: #2d2d2d;
+}
+
+/* Mensagem sem candidaturas */
+.vagas-empty,
+.vagas-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Lista de Vagas */
+.vagas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Cartão de Vaga */
+.vaga-card {
+  background-color: #fff;
+  border-left: 5px solid #4a5fd1;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  transition: transform 0.3s ease;
+}
+
+.vaga-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Imagem da vaga */
+.vaga-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Informações da vaga */
+.vaga-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Título da vaga */
+.vaga-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #4a5fd1;
+}
+
+/* Descrição da vaga */
+.vaga-desc {
+  font-size: 0.95rem;
+  color: #444;
+  flex-grow: 1;
+}
+
+/* Status da candidatura */
+.vaga-status {
+  font-size: 0.92rem;
+  color: #333;
+}
+
+/* Botões */
+.vaga-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+/* Botão de confirmação */
+.vaga-btn.confirmar {
+  background-color: #4caf50;
+}
+
+.vaga-btn.confirmar:hover {
+  background-color: #388e3c;
+}
+
+/* Botão de exclusão */
+.vaga-btn.excluir {
+  background-color: #f44336;
+}
+
+.vaga-btn.excluir:hover {
+  background-color: #c62828;
+}

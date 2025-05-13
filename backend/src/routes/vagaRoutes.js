@@ -1,28 +1,30 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-const {
-  createVaga,
-  listarVagas,
-  editarVaga,
-} = require("../controllers/vagaController");
+const { createVaga, listarVagas, editarVaga, deletarVaga } = require('../controllers/vagaController');
 
-// Cria a pasta uploads se não existir
-const uploadDir = path.join(__dirname, "../../uploads");
+// Configuração do multer
+const uploadDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// Configuração do multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
+    const timestamp = Date.now();
+    const sanitized = file.originalname
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9_-]/g, '')
+      .toLowerCase();
+
+    cb(null, `${timestamp}_${sanitized}${path.extname(file.originalname)}`);
   },
 });
 
@@ -39,8 +41,9 @@ const upload = multer({
 });
 
 // Rotas
-router.post("/vagas", upload.single("image"), createVaga);
-router.get("/vagas", listarVagas);
-router.put("/vagas/:id", upload.single("image"), editarVaga);
+router.post('/vagas', upload.single('image'), createVaga);
+router.get('/vagas', listarVagas);
+router.put('/vagas/:id', upload.single('image'), editarVaga);
+router.delete('/vagas/:id', deletarVaga);
 
 module.exports = router;

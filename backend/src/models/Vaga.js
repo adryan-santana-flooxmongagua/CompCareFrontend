@@ -1,15 +1,14 @@
 const mongoose = require("mongoose");
 
-const VagaSchema = new mongoose.Schema({
-  titulodavaga: { type: String, required: true },
-  descricao: { type: String, required: true },
-  tipo_vaga: { type: String, required: true },
+const vagaSchema = new mongoose.Schema({
+  nm_titulo: { type: String, required: true },
+  ds_descricao: { type: String, required: true },
+  tp_vaga: { type: String, required: true },
   vl_pontos: { type: Number, required: true },
-  id_hospital: { type: String, required: true },
-  status: { type: String, default: "ativa" },
-  qtd_vagas: { type: Number, required: true },
-  iddavaga: { type: String, required: true, unique: true },
-  imageUrl: { type: String },
+  id_hospital: { type: mongoose.Schema.Types.ObjectId, ref: 'Hospital', required: true },
+  st_status: { type: String, enum: ['ativa', 'inativa'], default: 'ativa' },
+  qt_vagas: { type: Number, required: true },
+  ds_imagem_url: { type: String },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Vaga", VagaSchema);
+module.exports = mongoose.model("Vaga", vagaSchema);

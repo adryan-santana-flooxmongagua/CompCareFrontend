@@ -1,23 +1,28 @@
 const mongoose = require("mongoose");
+
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 
 const conn = async () => {
-    try {
-        
-        const dbConn = await mongoose.connect(
-            `mongodb+srv://${dbUser}:${dbPassword}@cluster0.iek65xy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
-        )
+  if (!dbUser || !dbPassword) {
+    throw new Error("DB_USER e DB_PASSWORD devem estar definidos no arquivo .env");
+  }
 
-        console.log("Conectou-se ao banco");
+  try {
+    const dbConn = await mongoose.connect(
+      `mongodb+srv://${dbUser}:${dbPassword}@cluster0.0rftkp8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
 
-        return dbConn;
+    console.log("✅ Conectado ao banco de dados com sucesso");
+    return dbConn;
+  } catch (error) {
+    console.error("❌ Erro ao conectar no banco:", error);
+    process.exit(1); // Encerra o processo com erro
+  }
+};
 
-    } catch(error) {
-        console.log(error)
-    }
-}
-
-conn()
-
-module.exports = conn
+module.exports = conn;
