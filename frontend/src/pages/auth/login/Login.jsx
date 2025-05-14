@@ -5,11 +5,10 @@ import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState("volunteer");
   const [hospitalId, setHospitalId] = useState("");
   const [hospitais, setHospitais] = useState([]);
-
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     setErro("");
 
-    if (!email || !senha || (role === "admin" && !hospitalId)) {
+    if (!email || !password || (role === "admin" && !hospitalId)) {
       setErro("Por favor, preencha todos os campos!");
       return;
     }
@@ -39,7 +38,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          password: senha,
+          password,
           role,
           hospitalId: role === "admin" ? hospitalId : undefined,
         }),
@@ -49,20 +48,17 @@ const Login = () => {
 
       if (!response.ok) {
         setErro(data.error || "Email ou senha inválidos!");
-      } else {
-        const { token, user } = data;
-
-        localStorage.setItem("token", token);
-        localStorage.setItem("role", user.role);
-        localStorage.setItem("name", user.name);
-        localStorage.setItem("userId", user.id);
-
-        if (user.role === "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/");
-        }
+        return;
       }
+
+      const { token, user } = data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("name", user.name);
+      localStorage.setItem("userId", user.id);
+
+      navigate(user.role === "admin" ? "/admin/dashboard" : "/");
     } catch (err) {
       console.error("Erro ao fazer login:", err);
       setErro("Erro de conexão. Tente novamente.");
@@ -73,17 +69,11 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h2 className="login-title">
-        Por favor, digite suas informações de login
-      </h2>
+      <h2 className="login-title">Acesse sua conta</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="login-input-group">
           <label className="login-label">Tipo de Usuário</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="login-input"
-          >
+          <select value={role} onChange={(e) => setRole(e.target.value)} className="login-input">
             <option value="volunteer">Voluntário</option>
             <option value="admin">Administrador</option>
           </select>
@@ -93,10 +83,11 @@ const Login = () => {
           <label className="login-label">E-mail</label>
           <input
             type="email"
-            placeholder="johndoe@gmail.com"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="login-input"
+            placeholder="seuemail@exemplo.com"
           />
         </div>
 
@@ -104,10 +95,11 @@ const Login = () => {
           <label className="login-label">Senha</label>
           <input
             type="password"
-            placeholder="***************"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="login-input"
+            placeholder="********"
           />
         </div>
 
@@ -116,10 +108,11 @@ const Login = () => {
             <label className="login-label">ID do Hospital</label>
             <input
               type="text"
-              placeholder="Digite o ID do hospital"
+              required
               value={hospitalId}
               onChange={(e) => setHospitalId(e.target.value)}
               className="login-input"
+              placeholder="Digite o ID do hospital"
             />
           </div>
         )}
@@ -128,7 +121,7 @@ const Login = () => {
 
         <div className="login-link-container">
           <Link to="/forgot-password" className="login-link">
-            Esqueceu sua senha?
+            Esqueceu a senha?
           </Link>
         </div>
 
@@ -137,9 +130,9 @@ const Login = () => {
         </button>
 
         <p className="login-footer">
-          Você não tem uma conta?{" "}
+          Ainda não tem conta?{" "}
           <Link to="/register" className="login-link">
-            Crie a sua conta aqui
+            Cadastre-se aqui
           </Link>
         </p>
       </form>

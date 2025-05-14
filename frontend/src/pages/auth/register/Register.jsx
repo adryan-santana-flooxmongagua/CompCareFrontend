@@ -1,49 +1,58 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { API_BASE_URL } from "../../../config/api";
-import './Register.css';
+import "./Register.css";
 
 const Register = () => {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [role, setRole] = useState('volunteer'); // Estado para armazenar o tipo de papel
-  const [erro, setErro] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("volunteer");
+  const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hospitalId, setHospitalId] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro('');
+    setErro("");
 
-    if (!nome || !email || !senha || !confirmarSenha) {
-      setErro('Por favor, preencha todos os campos!');
+    if (!name || !email || !password || !confirmPassword) {
+      setErro("Preencha todos os campos.");
       return;
     }
 
-    if (senha !== confirmarSenha) {
-      setErro('As senhas não coincidem!');
+    if (password !== confirmPassword) {
+      setErro("As senhas não coincidem.");
       return;
     }
 
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: nome, email, password: senha, role })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role,
+          ...(role === "admin" && { hospitalId }),
+        }),
       });
 
       const data = await response.json();
+
       if (!response.ok) {
-        setErro(data.error || 'Erro ao criar conta.');
-      } else {
-        navigate('/login');
+        setErro(data.error || "Erro ao criar conta.");
+        return;
       }
+
+      navigate("/login");
     } catch (err) {
-      console.error('Erro ao cadastrar:', err);
-      setErro('Erro de conexão. Tente novamente.');
+      console.error("Erro ao cadastrar:", err);
+      setErro("Erro de conexão. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -57,10 +66,11 @@ const Register = () => {
           <label className="login-label">Nome</label>
           <input
             type="text"
-            placeholder="Digite seu nome"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="login-input"
+            placeholder="Seu nome completo"
           />
         </div>
 
@@ -68,10 +78,11 @@ const Register = () => {
           <label className="login-label">E-mail</label>
           <input
             type="email"
-            placeholder="seuemail@exemplo.com"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="login-input"
+            placeholder="seuemail@exemplo.com"
           />
         </div>
 
@@ -79,10 +90,11 @@ const Register = () => {
           <label className="login-label">Senha</label>
           <input
             type="password"
-            placeholder="Digite sua senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="login-input"
+            placeholder="********"
           />
         </div>
 
@@ -90,14 +102,26 @@ const Register = () => {
           <label className="login-label">Confirmar Senha</label>
           <input
             type="password"
-            placeholder="Confirme sua senha"
-            value={confirmarSenha}
-            onChange={(e) => setConfirmarSenha(e.target.value)}
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="login-input"
+            placeholder="********"
           />
         </div>
-
-        {/* Opção de seleção de papel (role) */}
+        {role === "admin" && (
+          <div className="login-input-group">
+            <label className="login-label">ID do Hospital</label>
+            <input
+              type="text"
+              required
+              value={hospitalId}
+              onChange={(e) => setHospitalId(e.target.value)}
+              className="login-input"
+              placeholder="Digite o ID do hospital"
+            />
+          </div>
+        )}
         <div className="login-input-group">
           <label className="login-label">Tipo de Usuário</label>
           <select
@@ -113,11 +137,14 @@ const Register = () => {
         {erro && <p className="login-error">{erro}</p>}
 
         <button type="submit" className="login-button" disabled={loading}>
-          {loading ? 'Cadastrando...' : 'Cadastrar'}
+          {loading ? "Cadastrando..." : "Cadastrar"}
         </button>
 
         <p className="login-footer">
-          Já tem uma conta? <Link to="/login" className="login-link">Faça login aqui</Link>
+          Já tem uma conta?{" "}
+          <Link to="/login" className="login-link">
+            Faça login aqui
+          </Link>
         </p>
       </form>
     </div>
