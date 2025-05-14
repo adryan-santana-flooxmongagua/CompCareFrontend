@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminSidebar from "../aside/Aside";
 import { API_BASE_URL } from "../../../config/api";
 import "./CreateVacancy.css";
@@ -18,6 +18,39 @@ const CriarVaga = () => {
   const [mensagem, setMensagem] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const fetchHospitalId = async () => {
+      const id_admin = localStorage.getItem("userId");
+      if (!id_admin) {
+        setMensagem("Erro: ID do administrador não encontrado.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/admins/${id_admin}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Falha ao buscar hospital do administrador");
+        }
+
+        const adminData = await response.json();
+        setFormData((prev) => ({
+          ...prev,
+          id_hospital: adminData.id_hospital,
+        }));
+      } catch (error) {
+        console.error("Erro ao buscar hospital:", error);
+        setMensagem("Erro ao buscar hospital do administrador.");
+      }
+    };
+
+    fetchHospitalId();
+  }, []);
+
   const handleChange = (e) => {
     if (e.target.name === "image") {
       setFormData({ ...formData, image: e.target.files[0] });
@@ -29,28 +62,27 @@ const CriarVaga = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const id_admin = localStorage.getItem("userId"); // recupera o ID do admin
-  
+
     if (!id_admin) {
       setMensagem("Erro: ID do administrador não encontrado.");
       setLoading(false);
       return;
     }
-  
+
     const data = new FormData();
-    data.append("titulodavaga", formData.titulodavaga);
-    data.append("descricao", formData.descricao);
-    data.append("tipo_vaga", formData.tipo_vaga);
+    data.append("nm_titulo", formData.titulodavaga);
+    data.append("ds_descricao", formData.descricao);
+    data.append("tp_vaga", formData.tipo_vaga);
     data.append("vl_pontos", formData.vl_pontos);
-    data.append("id_admin", id_admin); // envia o id_admin
     data.append("id_hospital", formData.id_hospital);
-    data.append("status", formData.status);
-    data.append("qtd_vagas", formData.qtd_vagas);
+    data.append("st_status", formData.status);
+    data.append("qt_vagas", formData.qtd_vagas);
     if (formData.image) {
       data.append("image", formData.image);
     }
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/vagas/vagas`, {
         method: "POST",
@@ -59,9 +91,9 @@ const CriarVaga = () => {
         },
         body: data,
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         setMensagem("Vaga cadastrada com sucesso!");
         setFormData({
@@ -84,7 +116,7 @@ const CriarVaga = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="dashboard-layout">
       <AdminSidebar />
@@ -107,7 +139,7 @@ const CriarVaga = () => {
                 </div>
 
                 <label htmlFor="fileUpload" className="custom-file-upload">
-                   Faça o upload da imagem
+                  Faça o upload da imagem
                   <span className="upload-icon"> 📁</span>
                 </label>
                 <input
@@ -176,17 +208,6 @@ const CriarVaga = () => {
                       required
                     />
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label>ID do Hospital</label>
-                  <input
-                    type="text"
-                    name="id_hospital"
-                    value={formData.id_hospital}
-                    onChange={handleChange}
-                    required
-                  />
                 </div>
 
                 <div className="form-group">
