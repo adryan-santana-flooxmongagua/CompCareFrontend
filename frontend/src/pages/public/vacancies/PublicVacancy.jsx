@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { API_BASE_URL, API_BASE_IMAGE_URL } from "../../../config/api";
-import './PublicVacancy.css';
+import "./PublicVacancy.css";
 
 const VagasPublicas = () => {
   const [vagas, setVagas] = useState([]);
@@ -10,10 +10,10 @@ const VagasPublicas = () => {
   useEffect(() => {
     const fetchVagas = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/vagas/vagas`);
+        const response = await fetch(`${API_BASE_URL}/vagas/publicas`);
         const data = await response.json();
         console.log("Vagas recebidas:", data);
-        const vagasAtivas = data.filter(vaga => vaga.status === "ativa");
+        const vagasAtivas = data.filter((vaga) => vaga.st_status === "ativa");
         setVagas(vagasAtivas);
       } catch (error) {
         console.error("Erro ao buscar vagas:", error);
@@ -24,10 +24,10 @@ const VagasPublicas = () => {
 
     // Função para decodificar o token JWT e obter o papel do usuário
     const fetchUserRole = () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (token) {
         try {
-          const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodifica o payload do JWT
+          const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decodifica o payload do JWT
           setUserRole(decodedToken.role); // Supondo que o campo "role" esteja presente no token
         } catch (error) {
           console.error("Erro ao decodificar o token:", error);
@@ -40,19 +40,19 @@ const VagasPublicas = () => {
   }, []);
 
   const handleCandidatar = async (vagaId) => {
-    if (userRole !== 'volunteer') {
-      alert('Você precisa ser um voluntário para se candidatar a vagas.');
+    if (userRole !== "volunteer") {
+      alert("Você precisa ser um voluntário para se candidatar a vagas.");
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
-  
+      const token = localStorage.getItem("token");
+
       if (!token) {
-        alert('Você precisa estar logado para se candidatar.');
+        alert("Você precisa estar logado para se candidatar.");
         return;
       }
-  
+
       const response = await fetch(`${API_BASE_URL}/candidaturas`, {
         method: "POST",
         headers: {
@@ -61,9 +61,9 @@ const VagasPublicas = () => {
         },
         body: JSON.stringify({ vagaId }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         alert(result.message); // Sucesso
       } else {
@@ -85,22 +85,22 @@ const VagasPublicas = () => {
         <p className="vagas-empty">Não há vagas disponíveis no momento.</p>
       ) : (
         <div className="vagas-list">
-          {vagas.map(vaga => (
+          {vagas.map((vaga) => (
             <div key={vaga._id} className="vaga-card">
-              {vaga.imageUrl && (
+              {vaga.ds_imagem_url && (
                 <img
-                  src={`${API_BASE_IMAGE_URL}${vaga.imageUrl}`}
-                  alt={vaga.titulodavaga}
+                  src={`${API_BASE_IMAGE_URL}${vaga.ds_imagem_url}`}
+                  alt={vaga.nm_titulo}
                   className="vaga-image"
                 />
               )}
               <div className="vaga-info">
-                <h3 className="vaga-title">{vaga.titulodavaga}</h3>
-                <p className="vaga-desc">{vaga.descricao}</p>
-                <p className="vaga-type">Tipo: {vaga.tipo_vaga}</p>
-                <p className="vaga-status">Status: {vaga.status}</p>
+                <h3 className="vaga-title">{vaga.nm_titulo}</h3>
+                <p className="vaga-desc">{vaga.ds_descricao}</p>
+                <p className="vaga-type">Tipo: {vaga.tp_vaga}</p>
+                <p className="vaga-status">Status: {vaga.st_status}</p>
                 <p className="vaga-points">Pontos: {vaga.vl_pontos}</p>
-                <p className="vaga-quantity">Vagas: {vaga.qtd_vagas}</p>
+                <p className="vaga-quantity">Vagas: {vaga.qt_vagas}</p>
                 <button
                   className="vaga-btn"
                   onClick={() => handleCandidatar(vaga._id)}
