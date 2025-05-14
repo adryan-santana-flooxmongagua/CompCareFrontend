@@ -18,7 +18,16 @@ const StatusVaga = () => {
         throw new Error("Formato inválido da resposta de vagas.");
       }
 
-      setVagas(data);
+      // Obtenha o ID do hospital ou admin logado
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const hospitalId = userData?.hospitalId || userData?._id;
+
+      // Filtra as vagas criadas pelo hospital logado
+      const vagasFiltradas = data.filter(
+        (vaga) => vaga.id_hospital === hospitalId
+      );
+
+      setVagas(vagasFiltradas);
     } catch (error) {
       console.error("Erro ao buscar vagas:", error);
     } finally {
@@ -29,21 +38,20 @@ const StatusVaga = () => {
   useEffect(() => {
     fetchVagas();
   }, []);
-  
 
   const handleDelete = async (vagaId) => {
     if (!window.confirm("Tem certeza que deseja excluir esta vaga?")) return;
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/vagas/vagas/${vagaId}`, {
         method: "DELETE",
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Erro ao deletar vaga.");
       }
-  
+
       // Atualiza a lista após deletar
       fetchVagas();
     } catch (error) {
@@ -51,7 +59,6 @@ const StatusVaga = () => {
       alert("Erro ao deletar vaga.");
     }
   };
-  
 
   const handleEdit = (vagaId) => {
     const vagaSelecionada = vagas.find((vaga) => vaga._id === vagaId);
@@ -89,21 +96,21 @@ const StatusVaga = () => {
               <div className="vagas-list">
                 {vagas.map((vaga) => (
                   <div key={vaga._id} className="vaga-card">
-                    {vaga.imageUrl ? (
+                    {vaga.ds_imagem_url ? (
                       <img
-                        src={`${API_BASE_IMAGE_URL}${vaga.imageUrl}`}
-                        alt={vaga.titulodavaga}
-                        className="vaga-image"
+                        src={`${API_BASE_IMAGE_URL}${vaga.ds_imagem_url}`}
+                        alt={vaga.nm_titulo}
                       />
                     ) : (
                       <div className="vaga-no-image">Sem imagem</div>
                     )}
                     <div className="vaga-info">
-                      <h3 className="vaga-title">{vaga.titulodavaga}</h3>
-                      <p className="vaga-type">Tipo: {vaga.tipo_vaga}</p>
-                      <p className="vaga-status">Status: {vaga.status}</p>
-                      <p className="vaga-points">Pontos: {vaga.vl_pontos}</p>
-                      <p className="vaga-quantity">Qtd. Vagas: {vaga.qtd_vagas}</p>
+                      <h3>{vaga.nm_titulo}</h3>
+                      <p>Tipo: {vaga.tp_vaga}</p>
+                      <p>Status: {vaga.st_status}</p>
+                      <p>Pontos: {vaga.vl_pontos}</p>
+                      <p>Qtd. Vagas: {vaga.qt_vagas}</p>
+
                       <p className="vaga-candidatos">
                         Voluntários Alistados: {vaga.candidatos?.length || 0}
                       </p>

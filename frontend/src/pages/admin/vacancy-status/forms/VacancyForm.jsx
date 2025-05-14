@@ -4,32 +4,34 @@ import "./VacancyForm.css";
 
 const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    titulodavaga: "",
-    descricao: "",
-    tipo_vaga: "",
+    nm_titulo: "",
+    ds_descricao: "",
+    tp_vaga: "",
     vl_pontos: "",
     id_hospital: "",
-    status: "ativa",
-    qtd_vagas: "",
+    st_status: "ativa",
+    qt_vagas: "",
     image: null,
   });
+
   const [mensagem, setMensagem] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (vagaParaEditar) {
-      setFormData({
-        titulodavaga: vagaParaEditar.titulodavaga || "",
-        descricao: vagaParaEditar.descricao || "",
-        tipo_vaga: vagaParaEditar.tipo_vaga || "",
-        vl_pontos: vagaParaEditar.vl_pontos || "",
-        id_hospital: vagaParaEditar.id_hospital || "",
-        status: vagaParaEditar.status || "ativa",
-        qtd_vagas: vagaParaEditar.qtd_vagas || "",
-        image: null,
-      });
-    }
-  }, [vagaParaEditar]);
+ useEffect(() => {
+  if (vagaParaEditar) {
+    setFormData({
+      nm_titulo: vagaParaEditar.nm_titulo || "",
+      ds_descricao: vagaParaEditar.ds_descricao || "",
+      tp_vaga: vagaParaEditar.tp_vaga || "",
+      vl_pontos: vagaParaEditar.vl_pontos || "",
+      id_hospital: vagaParaEditar.id_hospital || "",
+      st_status: vagaParaEditar.st_status || "ativa",
+      qt_vagas: vagaParaEditar.qt_vagas || "",
+      image: null,
+    });
+  }
+}, [vagaParaEditar]);
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -47,7 +49,9 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
     const data = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
-      if (value) data.append(key, value);
+      if (value !== null && value !== "") {
+        data.append(key, value);
+      }
     });
 
     data.append("id_admin", id_admin);
@@ -117,8 +121,8 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
               <div className="form-group">
                 <label>Título da vaga</label>
                 <input
-                  name="titulodavaga"
-                  value={formData.titulodavaga}
+                  name="nm_titulo"
+                  value={formData.nm_titulo}
                   onChange={handleChange}
                   required
                 />
@@ -126,8 +130,8 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
               <div className="form-group">
                 <label>Descrição</label>
                 <textarea
-                  name="descricao"
-                  value={formData.descricao}
+                  name="ds_descricao"
+                  value={formData.ds_descricao}
                   onChange={handleChange}
                   required
                 />
@@ -136,8 +140,8 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
                 <div className="form-group half">
                   <label>Tipo</label>
                   <input
-                    name="tipo_vaga"
-                    value={formData.tipo_vaga}
+                    name="tp_vaga"
+                    value={formData.tp_vaga}
                     onChange={handleChange}
                     required
                   />
@@ -155,7 +159,6 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>Hospital ID</label>
                   <input
                     name="id_hospital"
                     value={formData.id_hospital}
@@ -166,9 +169,9 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
                 <div className="form-group half">
                   <label>Quantidade de Vagas</label>
                   <input
-                    name="qtd_vagas"
+                    name="qt_vagas"
                     type="number"
-                    value={formData.qtd_vagas}
+                    value={formData.qt_vagas}
                     onChange={handleChange}
                     required
                   />
@@ -177,8 +180,8 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
               <div className="form-group">
                 <label>Status</label>
                 <select
-                  name="status"
-                  value={formData.status}
+                  name="st_status"
+                  value={formData.st_status}
                   onChange={handleChange}
                 >
                   <option value="ativa">Ativa</option>
@@ -192,7 +195,11 @@ const FormVaga = ({ vagaParaEditar, onClose, onSave }) => {
           </button>
         </form>
         {mensagem && <p>{mensagem}</p>}
-        <button onClick={onClose} className="submit-btn" style={{ backgroundColor: "#aaa" }}>
+        <button
+          onClick={onClose}
+          className="submit-btn"
+          style={{ backgroundColor: "#aaa" }}
+        >
           Fechar
         </button>
       </div>
